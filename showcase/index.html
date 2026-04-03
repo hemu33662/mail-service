@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureMail - Enterprise-Grade Stateless Mail Service</title>
+    <meta name="description"
+        content="A secure, multi-tenant mail API built with Java and Spring Boot. Zero-persistence vault for enterprise communication.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <i class="fas fa-shield-halved"></i>
+                <span>SecureMail</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#security">Security</a>
+                <a href="#api">API Docs</a>
+                <a href="#sdks" class="nav-btn">Get Started</a>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container hero-content">
+            <div class="hero-text" data-aos="fade-right">
+                <h2 class="badge">Next-Gen Communication</h2>
+                <h1>Enterprise-Grade <span>Stateless</span> Mail Service</h1>
+                <p>Secure, multi-tenant mail API built with Java 17 and Spring Boot. Designed for "Zero Persistence"
+                    with BYOD Audit Logging and HMAC Security.</p>
+                <div class="hero-cta">
+                    <a href="#api" class="btn btn-primary">Explore API Docs</a>
+                    <a href="#security" class="btn btn-outline">Security Deep-dive</a>
+                </div>
+            </div>
+            <div class="hero-image" data-aos="fade-left">
+                <!-- Using the generated hero image -->
+                <div class="image-wrapper">
+                    <img src="mail_service_hero_1775097616011.png" alt="Secure Mail Hero" class="main-img">
+                    <div class="floating-badge badge-1"><i class="fas fa-lock"></i> HMAC Active</div>
+                    <div class="floating-badge badge-2"><i class="fas fa-database"></i> Zero Persistence</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-waves">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#0a0a0c" fill-opacity="1"
+                    d="M0,192L48,208C96,224,192,256,288,256C384,256,480,224,576,213.3C672,203,768,213,864,229.3C960,245,1056,267,1152,256C1248,245,1344,203,1392,181.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                </path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Why Choose SecureMail?</h2>
+                <p>Engineered for high-security environments where data privacy and stateless auditing are paramount.
+                </p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-icon"><i class="fas fa-users-rectangle"></i></div>
+                    <h3>Multi-Tenant Architecture</h3>
+                    <p>Configurable dynamic SMTP credentials per client with environment isolation (SANDBOX vs PROD).
+                    </p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-icon"><i class="fas fa-fingerprint"></i></div>
+                    <h3>HMAC Signatures</h3>
+                    <p>Cryptographically secure request verification using SHA256 HMAC ensuring complete message
+                        integrity.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-icon"><i class="fas fa-eye"></i></div>
+                    <h3>Zero Persistence</h3>
+                    <p>Stateless by design. No sensitive email content or metadata is permanently stored on the service.
+                    </p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card-icon"><i class="fas fa-server"></i></div>
+                    <h3>BYOD Audit Logging</h3>
+                    <p>Direct integration with CLIENT databases for audit logs. Your data, your logs, your security.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Deep-dive -->
+    <section id="security" class="section security-showcase">
+        <div class="container flex-row">
+            <div class="security-visual" data-aos="zoom-in">
+                <div class="code-editor">
+                    <div class="editor-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">AuditService.java</span>
+                    </div>
+                    <div class="code-body">
+                        <pre><code><span class="keyword">@Async</span>
+<span class="keyword">public</span> <span class="datatype">void</span> <span class="func">logMailAttempt</span>(Client client, MailData data) {
+    <span class="comment">// Dynamic DB Connection to Client DB</span>
+    <span class="datatype">String</span> jdbcUrl = client.getAuditDbUrl();
+    <span class="datatype">DataSource</span> ds = getDynamicDs(jdbcUrl);
+    
+    <span class="comment">// Log Direct to Client</span>
+    saveAuditLog(ds, <span class="string">"SENT"</span>, data.getRecipient());
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="security-text" data-aos="fade-left">
+                <h2>Maximum Security, <span>Zero Risk</span></h2>
+                <div class="security-item">
+                    <div class="s-icon"><i class="fas fa-user-shield"></i></div>
+                    <div>
+                        <h4>Manager Oversight</h4>
+                        <p>Automatically blind-copies every mail to the designated client manager for real-time
+                            oversight.</p>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="s-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                    <div>
+                        <h4>Replay Protection</h4>
+                        <p>Mandatory X-TIMESTAMP validation within a 5-minute window prevents replay attacks.</p>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="s-icon"><i class="fas fa-network-wired"></i></div>
+                    <div>
+                        <h4>Endpoint Isolation</h4>
+                        <p>Strict header-based authentication with `X-API-KEY` and `X-SIGNATURE` mandatory for all
+                            traffic.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API & SDK Section -->
+    <section id="api" class="section api-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Developer First</h2>
+                <p>Easy to integrate. Hard to compromise.</p>
+            </div>
+            <div class="api-demo">
+                <div class="api-tabs">
+                    <button class="tab-btn active" onclick="showTab('python')">Python</button>
+                    <button class="tab-btn" onclick="showTab('nodejs')">Node.js</button>
+                    <button class="tab-btn" onclick="showTab('curl')">cURL</button>
+                </div>
+                <div class="tab-content" id="python-tab" data-aos="fade-up">
+                    <pre><code><span class="keyword">from</span> mail_client <span class="keyword">import</span> SecureMailClient
+
+client = SecureMailClient(
+    api_key=<span class="string">"portfolio-api-key-123"</span>,
+    secret_key=<span class="string">"portfolio-secret-key-xyz"</span>,
+    base_url=<span class="string">"https://mail-api.portfolio.com"</span>
+)
+
+client.send_mail(
+    sender=<span class="string">"dev.portfolio@gmail.com"</span>,
+    to=<span class="string">"nasaramheamnth33662@gmail.com"</span>,
+    subject=<span class="string">"Portfolio Secure Alert"</span>,
+    body=<span class="string">"<h1>Security Authenticated</h1>"</span>
+)</code></pre>
+                </div>
+                <div class="tab-content hidden" id="nodejs-tab">
+                    <pre><code><span class="keyword">const</span> SecureMail = <span class="func">require</span>(<span class="string">'secure-mail-sdk'</span>);
+
+<span class="keyword">const</span> client = <span class="keyword">new</span> SecureMail({
+    apiKey: <span class="string">'portfolio-api-key-123'</span>,
+    secret: <span class="string">'portfolio-secret-key-xyz'</span>
+});
+
+client.<span class="func">send</span>({
+    from: <span class="string">'dev.portfolio@gmail.com'</span>,
+    to: <span class="string">'nasaramheamnth33662@gmail.com'</span>,
+    subject: <span class="string">'Audit Complete'</span>
+});</code></pre>
+                </div>
+                <div class="tab-content hidden" id="curl-tab">
+                    <pre><code>curl -X POST <span class="string">"https://api.securemail.com/api/v1/mail"</span> \
+  -H <span class="string">"X-API-KEY: portfolio-api-key-123"</span> \
+  -H <span class="string">"X-TIMESTAMP: 1705763000000"</span> \
+  -H <span class="string">"X-SIGNATURE: sOmEhAsH..."</span> \
+  -F <span class="string">"from=dev.portfolio@gmail.com"</span> \
+  -F <span class="string">"to=nasaramheamnth33662@gmail.com"</span> \
+  -F <span class="string">"subject=Test Delivery"</span></code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-info">
+                <h3>SecureMail</h3>
+                <p>Building the future of secure enterprise communication.</p>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="#features">Features</a>
+                <a href="#security">Security</a>
+                <a href="#api">Documentation</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 SecureMail Service. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="script.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            offset: 100,
+            once: true
+        });
+    </script>
+</body>
+
+</html>

@@ -70,9 +70,9 @@ class SecureMailClient {
     // Replace with your provided credentials
     const client = new SecureMailClient(
         'http://localhost:8080/api/v1',
-        'dlt-dev-api-key-123',
-        'dlt-dev-secret-key-xyz',
-        'employee_test_01'
+        'YOUR_API_KEY_HERE',
+        'YOUR_SECRET_KEY_HERE',
+        'YOUR_USER_ID_HERE'
     );
 
     await client.sendMail({

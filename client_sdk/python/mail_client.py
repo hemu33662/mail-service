@@ -69,9 +69,9 @@ class SecureMailClient:
 # Usage Example
 if __name__ == "__main__":
     # Replace with your provided credentials
-    CLIENT_API_KEY = "dlt-dev-api-key-123"
-    CLIENT_SECRET_KEY = "dlt-dev-secret-key-xyz"
-    CLIENT_USER_ID = "employee_test_01"
+    CLIENT_API_KEY = "YOUR_API_KEY_HERE"
+    CLIENT_SECRET_KEY = "YOUR_SECRET_KEY_HERE"
+    CLIENT_USER_ID = "YOUR_USER_ID_HERE"
     
     client = SecureMailClient(
         base_url="http://localhost:8080/api/v1",

@@ -44,3 +44,9 @@ org/
 test.txt
 temp/
 tmp/
+
+# Secrets and Scripts
+src/main/resources/clients.json
+*.ps1
+tools/*.ps1
+tests/*.ps1

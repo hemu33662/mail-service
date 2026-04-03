@@ -76,10 +76,10 @@ class SecureMailClient {
     );
 
     await client.sendMail({
-        to: 'recipient@example.com',
-        from: 'dev-support@deloitte.com',
-        subject: 'Hello from Node.js SDK',
-        body: '<h1>This is a secure test</h1>'
-        // attachments: ['document.pdf']
+        to: 'RECEPIENT_EMAIL_HERE',
+        from: 'SENDER_EMAIL_HERE',
+        subject: 'API Request - Test Message',
+        body: '<h1>TEST SUCCESSFUL</h1><p>Your Secure Mail Service is working.</p>'
+        // attachments: ['path/to/attachment.pdf']
     });
 })();

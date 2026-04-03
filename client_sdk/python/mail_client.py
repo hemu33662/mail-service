@@ -82,9 +82,9 @@ if __name__ == "__main__":
 
     # Send an email
     client.send_mail(
-        to="recipient@example.com",
-        subject="Hello from Python SDK",
-        body="<h1>This is a secure test</h1>",
-        from_addr="dev-support@deloitte.com"
-        # attachments=["document.pdf"]
+        to="RECEPIENT_EMAIL_HERE",
+        subject="API Request - Test Message",
+        body="<h1>TEST SUCCESSFUL</h1><p>Your Secure Mail Service is working.</p>",
+        from_addr="SENDER_EMAIL_HERE"
+        # attachments=["path/to/attachment.pdf"]
     )

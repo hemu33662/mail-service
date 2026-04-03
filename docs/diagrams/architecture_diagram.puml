@@ -1,0 +1,33 @@
+@startuml
+skinparam packageStyle rectangle
+
+package "Secure Mail Service" #F0F0F0 {
+    
+    package "Security Layer" #E1F5FE {
+        [ApiKeyAuthFilter] -down-> [ClientConfigurationService]
+        [ApiKeyAuthFilter] -down-> [ApiKeyAuthenticationToken]
+        [SecurityConfig] -right-> [ApiKeyAuthFilter]
+    }
+
+    package "API Layer" #E8F5E9 {
+        [MailController] -down-> [MailService]
+        [MailController] -right-> [GlobalExceptionHandler]
+    }
+
+    package "Business Layer" #FFF9DB {
+        [MailService] -down-> [AuditService]
+        [AuditService] -right-> [Logback Persistence]
+    }
+
+    package "Internal Registry" #FFEBEE {
+        [ClientConfigurationService] -down-> [clients.json]
+    }
+}
+
+actor "User Apps (SDK)" as SDK
+actor "SMTP Server" as SMTP
+
+SDK -right-> [MailController] : /api/v1/mail (HMAC Verified)
+[MailService] -right-> SMTP : SMTP/SMTPS (Jakarta Mail)
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+skinparam handwritten false
+skinparam monochrome false
+skinparam packageStyle rect
+skinparam defaultFontName "Verdana"
+
+title Secure Mail Service - HMAC Authentication Flow
+
+actor "Client Application" as Client
+participant "Server (ApiKeyAuthFilter)" as Filter
+participant "ClientConfigService" as Config
+participant "SecurityContext" as Auth
+participant "MailService" as Service
+database "clients.json" as DB
+
+Client -> Client: 1. Generate Timestamp (T)
+Client -> Client: 2. Create String: apiKey + userId + T
+Client -> Client: 3. Sign String with SecretKey (SHA256)
+Client -> Filter: 4. POST /api/v1/mail\nHeaders: API Key, UserID, Signature, Timestamp
+
+Filter -> Filter: 5. Validate Timestamp (max ±5 mins)
+alt Timestamp Expired
+    Filter --> Client: 401 Unauthorized (Expired)
+end
+
+Filter -> Config: 6. Lookup Client by API Key
+Config -> DB: Read configuration
+DB --> Config: Client Secret Key
+Config --> Filter: Client Object (including Secret)
+
+Filter -> Filter: 7. Re-calculate Signature\nHmacSHA256(apiKey + userId + T, ClientSecret)
+
+alt Signatures Match
+    Filter -> Auth: 8. Set Authentication (Success)
+    Filter -> Service: 9. Process and Send Mail
+    Service --> Client: 200 OK (TraceID)
+else Signatures Mismatch
+    Filter --> Client: 401 Unauthorized (Invalid Signature)
+end
+
+@enduml

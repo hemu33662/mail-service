@@ -31,17 +31,27 @@ public class ClientConfigurationService {
     @PostConstruct
     public void loadClients() {
         try {
-            List<ClientConfig> clients = objectMapper.readValue(
-                    clientsConfigFile.getInputStream(),
-                    new TypeReference<List<ClientConfig>>() {
-                    });
+            List<ClientConfig> clients;
+            String envConfig = System.getenv("MAIL_CLIENTS_CONFIG");
+
+            if (envConfig != null && !envConfig.isBlank()) {
+                log.info("Loading client configuration from environment variable 'MAIL_CLIENTS_CONFIG'");
+                clients = objectMapper.readValue(envConfig, new TypeReference<List<ClientConfig>>() {
+                });
+            } else {
+                log.info("Loading client configuration from classpath:clients.json");
+                clients = objectMapper.readValue(
+                        clientsConfigFile.getInputStream(),
+                        new TypeReference<List<ClientConfig>>() {
+                        });
+            }
 
             apiKeyMap = clients.stream()
                     .collect(Collectors.toMap(ClientConfig::getApiKey, Function.identity()));
 
             log.info("Loaded {} clients from configuration.", clients.size());
         } catch (IOException e) {
-            log.error("Failed to load clients.json", e);
+            log.error("Failed to load client configuration", e);
             throw new RuntimeException("Critical: Could not load client configuration", e);
         }
     }

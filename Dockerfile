@@ -10,8 +10,10 @@ RUN mvn dependency:go-offline
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Stage 2: Final lightweight image
-FROM openjdk:17-jdk-slim
+# Stage 2: Distroless Runtime (The most secure option)
+# This image contains NO busybox, NO shell, and NO package manager.
+FROM gcr.io/distroless/java17-debian12:nonroot
+
 WORKDIR /app
 
 # Copy the JAR from the build stage

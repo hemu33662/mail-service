@@ -30,10 +30,52 @@ public class MailService {
         this.auditService = auditService;
     }
 
+    private final org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+
     @SuppressWarnings("null")
     public void processAndSendMail(MailRequest request, ClientConfig client, String userId) {
         log.info("Processing mail request from User={} Client={}", userId, client.getClientId());
 
+        // Check if HTTP API delivery is configured (Bypasses Render's SMTP block)
+        String resendApiKey = System.getenv("RESEND_API_KEY");
+        if (resendApiKey != null && !resendApiKey.isBlank()) {
+            sendViaHttp(request, client, resendApiKey, userId);
+            return;
+        }
+
+        // Fallback to SMTP (Local testing)
+        sendViaSmtp(request, client, userId);
+    }
+
+    private void sendViaHttp(MailRequest request, ClientConfig client, String apiKey, String userId) {
+        try {
+            log.info("Attempting HTTP API delivery via Resend...");
+            
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(apiKey);
+
+            java.util.Map<String, Object> body = new java.util.HashMap<>();
+            body.put("from", request.getFrom());
+            body.put("to", request.getTo().split(","));
+            body.put("subject", request.getSubject());
+            body.put("html", request.getBody());
+
+            org.springframework.http.HttpEntity<java.util.Map<String, Object>> entity = new org.springframework.http.HttpEntity<>(body, headers);
+            
+            restTemplate.postForEntity("https://api.resend.com/emails", entity, String.class);
+            
+            log.info("Mail sent successfully via HTTP API to {}", request.getTo());
+            auditService.logMailTransaction(client, userId, request.getTo(), request.getSubject(), "SUCCESS (HTTP)");
+
+        } catch (Exception e) {
+            log.error("Failed to send mail via HTTP API", e);
+            auditService.logMailTransaction(client, userId, request.getTo(), request.getSubject(), "FAILED (HTTP): " + e.getMessage());
+            throw new RuntimeException("HTTP Mail delivery failed: " + e.getMessage(), e);
+        }
+    }
+
+    private void sendViaSmtp(MailRequest request, ClientConfig client, String userId) {
         SenderConfig senderConfig = validateAndGetSender(request.getFrom(), client);
         JavaMailSender mailSender = createJavaMailSender(client.getSmtpConfig());
 
@@ -80,15 +122,13 @@ public class MailService {
             }
 
             mailSender.send(message);
-            log.info("Mail sent successfully to {}", request.getTo());
-
-            auditService.logMailTransaction(client, userId, request.getTo(), request.getSubject(), "SUCCESS");
+            log.info("Mail sent successfully via SMTP to {}", request.getTo());
+            auditService.logMailTransaction(client, userId, request.getTo(), request.getSubject(), "SUCCESS (SMTP)");
 
         } catch (Exception e) {
-            log.error("Failed to send mail (Suppressing error)", e);
-            auditService.logMailTransaction(client, userId, request.getTo(), request.getSubject(),
-                    "FAILED (Suppressed): " + e.getMessage());
-            // throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
+            log.error("Failed to send mail via SMTP", e);
+            auditService.logMailTransaction(client, userId, request.getTo(), request.getSubject(), "FAILED (SMTP): " + e.getMessage());
+            throw new RuntimeException("SMTP Mail delivery failed: " + e.getMessage(), e);
         }
     }
 

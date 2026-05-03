@@ -65,8 +65,15 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Trim headers to avoid whitespace issues from proxies/environment variables
+        apiKey = apiKey.trim();
+        userId = userId.trim();
+        signature = signature.trim();
+        timestampStr = timestampStr.trim();
+
         Optional<ClientConfig> clientOpt = clientConfigService.getClientByApiKey(apiKey);
         if (clientOpt.isEmpty()) {
+            log.warn("Invalid API Key received: [{}]", apiKey);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid API Key");
             return;
         }
@@ -76,6 +83,7 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
             long timestamp = Long.parseLong(timestampStr);
             long now = System.currentTimeMillis();
             if (Math.abs(now - timestamp) > MAX_REQUEST_AGE) {
+                log.warn("Request expired for Client={}. Now={}, Timestamp={}", client.getClientId(), now, timestamp);
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
                         "Request expired (Timestamp too old or future)");
                 return;
@@ -84,11 +92,14 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Timestamp format");
             return;
         }
-
         String dataToSign = apiKey + userId + timestampStr;
         if (!isValidSignature(signature, client.getSecretKey(), dataToSign)) {
-            log.warn("Signature mismatch for Client={} User={}", client.getClientId(), userId);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Signature");
+            log.error("SIGNATURE MISMATCH! Client={} User={}", client.getClientId(), userId);
+            log.debug("Data signed: [{}]", dataToSign);
+            log.debug("Incoming signature: [{}]", signature);
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid Signature. Data signed was: " + dataToSign);
             return;
         }
 
